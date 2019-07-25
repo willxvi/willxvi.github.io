@@ -9,10 +9,10 @@ AFRAME.registerComponent('markerhandler', {
         animatedMarker.addEventListener('click', function(ev, target){
             const intersectedElement = ev && ev.detail && ev.detail.intersectedEl;
             if (aEntity && intersectedElement === aEntity) {
-                console.log("Yellow Box");
+                window.open("https://www.google.com");
             }
             if (aEntity2 && intersectedElement === aEntity2) {
-                console.log("Blue Box");
+                window.open("https://www.facebook.com");
             }
         });
 }});
