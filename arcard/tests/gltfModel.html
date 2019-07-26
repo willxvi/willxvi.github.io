@@ -6,8 +6,13 @@
     <a-scene embedded arjs='trackingMethod: best;'>
       <a-marker-camera preset='hiro'>
 	  
-	  <a-gltf-model src="https://rawgit.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF/DamagedHelmet.gltf"></a-gltf-model>
-	  
+			<a-assets>
+			<a-asset-item id="tree" src="https://rawgit.com/KhronosGroup/glTF-Sample-Models/master/2.0/DamagedHelmet/glTF/DamagedHelmet.gltf">
+			</a-assets>
+
+			<!-- Using the asset management system. -->
+			<a-gltf-model src="#tree"></a-gltf-model>
+  
 	  </a-marker-camera>
       <a-camera-static/>
     </a-scene>
