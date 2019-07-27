@@ -11,12 +11,8 @@
         <!-- we add detectionMode and matrixCodeType to tell AR.js to recognize barcode markers -->
         <a-scene embedded arjs='sourceType: webcam;'>
 
-        <a-assets>
-            <a-asset-item id="animated-asset" src="https://raw.githubusercontent.com/nicolocarpignoli/nicolocarpignoli.github.io/master/ar-click-events/models/CesiumMan.gltf" crossOrigin="anonymous"></a-asset-item>
-        </a-assets>
-
         <a-marker preset="hiro">
-          <a-entity gltf-model="#animated-asset"></a-entity>
+          <a-entity gltf-model-next="src: url(scene.gltf);"></a-entity>
         </a-marker>
 
         <!-- use this <a-entity camera> to support multiple-markers, otherwise use <a-marker-camera> instead of </a-marker> -->
