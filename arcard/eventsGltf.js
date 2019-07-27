@@ -3,8 +3,9 @@ AFRAME.registerComponent('markerhandler', {
     init: function() {
 		
 		const aEntity = document.querySelector("#animated-model");
+		const animatedMarker = document.querySelector("#animated-marker");
 		
-		if(document.querySelector("a-marker").object3D.visible == true){
+		if(animatedMarker.object3D.visible == true){
 			alert("marker");
 			aEntity.setAttribute('animation-mixer', {loop: 'repeat'});	
 		};
