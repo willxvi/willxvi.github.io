@@ -5,6 +5,6 @@ AFRAME.registerComponent('markerhandler', {
 		const aEntity = document.querySelector("#animated-model");
 		
 		if(document.querySelector("a-marker").object3D.visible == true){
-			aEntity.setAttribute('animation-mixer', {loop: 'once'});	
+			aEntity.setAttribute('animation-mixer', {loop: 'repeat'});	
 		};
 }});
