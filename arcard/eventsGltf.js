@@ -1,6 +1,9 @@
 AFRAME.registerComponent('markerhandler', {
 
+	
     init: function() {
+		
+		alert("teste");
 		
 		const aEntity = document.querySelector("#animated-model");
 		const animatedMarker = document.querySelector("#animated-marker");
