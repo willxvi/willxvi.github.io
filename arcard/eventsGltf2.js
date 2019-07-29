@@ -12,7 +12,8 @@ AFRAME.registerComponent('markerhandler', {
         animatedMarker.addEventListener('mousedown', function(ev, target){
             const intersectedElement = ev && ev.detail && ev.detail.intersectedEl;
             if (aEntity && intersectedElement === aEntity) {
-				aEntity.setAttribute('animation', {property: 'position', dur: 1000, to: '2 0.5 0'});					
+				alert("click")
+				aEntity.setAttribute('animation', {property: 'position', dur: 1000, to: '2 0.5 0'});
             }
         });
 		
