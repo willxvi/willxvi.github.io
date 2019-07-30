@@ -6,7 +6,7 @@ AFRAME.registerComponent('markerhandler', {
 		const animatedMarker = document.querySelector("#animated-marker");
 		
 		animatedMarker.addEventListener('markerFound', function() {
-			aEntity.setAttribute('animation', {property: 'position', dur: 1000, to: '2 0.5 0'});	
+			aEntity.setAttribute('animation', {property: 'position', dur: 1000, to: '1 0 0'});	
 		});
 		
         animatedMarker.addEventListener('mousedown', function(ev, target){
