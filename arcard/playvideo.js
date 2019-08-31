@@ -6,9 +6,9 @@ AFRAME.registerComponent('markerhandler', {
 		const animatedMarker = document.querySelector("#animated-marker");
 		
 		animatedMarker.addEventListener('markerFound', function() {
-			aEntity.pause()
+			aEntity.pause();
 			alert("found");
-			aEntity.play()	
+			aEntity.play();
 		});
 		
 }});
