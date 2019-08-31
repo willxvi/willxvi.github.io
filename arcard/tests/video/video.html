@@ -4,16 +4,39 @@
 <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.7.7/aframe/build/aframe-ar.js"></script>
   <body style='margin : 0px; overflow: hidden;'>
     
-	<script src="../../playvideo.js"></script>
+	 <script>
+	AFRAME.registerComponent('vidhandler', {
+	  // ...
+	  init: function () {
+		// Set up initial state and variables.
+		this.toggle = false;
+		this.vid = document.querySelector("#vid")
+		this.vid.pause();
+	  },
+	  tick:function(){
+		
+	if(this.el.object3D.visible == true){
+	  if(!this.toggle){
+		 this.toggle = true;
+		 this.vid.play();
+		}
+	  }else{
+	  this.toggle = false;
+		this.vid.pause();
+		}
+	  }
+	});
+	</script>
+
 
 	<a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 4x4;'>
 	
 	<a-assets>
-  	<video id="vid" src="video.mp4"></video>
-	</a-assets>
+      <video id="vid" src="video.mp4" loop="true" crossorigin>
+    </a-assets>
 	
-      <a-marker markerhandler id="animated-marker" type='barcode' value='8191'>
-		  <a-sky rotation="0 -90 0" src="#vid"></a-sky>
+      <a-marker vidhandler id="animated-marker" type='barcode' value='8191'>
+		  <a-plane position='1 2 -2' scale="2 2 2" width="2" rotation="-90 0 0" material='transparent:true;opacity: 0.7;src:#vid'></a-plane>
       </a-marker>
       <a-entity camera></a-entity>
     </a-scene>
