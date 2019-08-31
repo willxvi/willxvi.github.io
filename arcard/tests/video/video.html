@@ -42,8 +42,9 @@
     </a-assets>
 	
       <a-marker vidhandler id="animated-marker" type='barcode' value='8191'>
-		  <a-plane position='0 0.5 0' rotation="-90 0 0" material='transparent:true;src:#vid' sound='src: #sound'></a-plane>
+		  <a-plane position='0 0.5 0' rotation="-90 0 0" material='transparent:true;src:#vid'></a-plane>
       </a-marker>
+	  <a-entity sound="src: #sound" autoplay="false"></a-entity>
       <a-entity camera></a-entity>
     </a-scene>
 	
