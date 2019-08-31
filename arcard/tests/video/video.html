@@ -11,6 +11,7 @@
 		// Set up initial state and variables.
 		this.toggle = false;
 		this.vid = document.querySelector("#vid")
+		this.sound = document.querySelector("#sound")
 		this.vid.pause();
 	  },
 	  tick:function(){
@@ -19,10 +20,12 @@
 	  if(!this.toggle){
 		 this.toggle = true;
 		 this.vid.play();
+		 this.sound.playSound();
 		}
 	  }else{
 	  this.toggle = false;
 		this.vid.pause();
+		this.sound.stopSound();
 		}
 	  }
 	});
@@ -32,11 +35,15 @@
 	<a-scene embedded arjs='sourceType: webcam; debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 4x4;'>
 	
 	<a-assets>
+            <audio id="sound" src="FDP.mp3" preload="auto"></audio>
+        </a-assets>
+		
+	<a-assets>
       <video id="vid" src="video.mp4" loop="true" muted="true" crossorigin>
     </a-assets>
 	
       <a-marker vidhandler id="animated-marker" type='barcode' value='8191'>
-		  <a-plane position='0 0.5 0' rotation="-90 0 0" material='transparent:true;src:#vid'></a-plane>
+		  <a-plane position='0 0.5 0' rotation="-90 0 0" material='transparent:true;src:#vid' sound='src: #sound'></a-plane>
       </a-marker>
       <a-entity camera></a-entity>
     </a-scene>
