@@ -1,47 +1,66 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ar.js/aframe/build/aframe-ar.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.min.js"></script>
-  </head>
-  <body>
-    <a-scene embedded arjs="sourceType: webcam; detectionMode: mono_and_matrix;">
-      <a-marker preset="hiro">
-        <a-entity
-          position="0 0 0"
-          id="qrTextContainer"
-          text="value: ; align: center; wrapCount: 12"
-        ></a-entity>
-      </a-marker>
-      <a-entity camera></a-entity>
-    </a-scene>
-
-    <script>
-      function updateQRCode() {
-        const canvas = document.querySelector("canvas");
-        const context = canvas.getContext("2d");
-        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-        const qrCode = jsQR(imageData.data, imageData.width, imageData.height, {
-          inversionAttempts: "dontInvert",
-        });
-
-        if (qrCode) {
-          const qrTextContainer = document.getElementById("qrTextContainer");
-          qrTextContainer.setAttribute("text", {
-            value: qrCode.data,
-            align: "center",
-            wrapCount: 12,
+<head>
+  <title>Ler QR Code com a câmera do navegador e AR.js</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ar.js/aframe/build/aframe-ar.js"></script>
+  <script src="https://cdn.rawgit.com/cozmo/jsQR/master/dist/jsQR.js"></script>
+</head>
+<body>
+  <h1>Ler QR Code com a câmera do navegador e AR.js</h1>
+  <script>
+    AFRAME.registerComponent('barcode-detector', {
+      init: function () {
+        this.canvas = document.createElement('canvas');
+        this.context = this.canvas.getContext('2d');
+        this.textEntity = document.createElement('a-entity');
+        this.el.appendChild(this.textEntity);
+        this.detectQRCode();
+      },
+      detectQRCode: function () {
+        const self = this;
+        const marker = self.el.object3D;
+        if (marker && marker.children && marker.children.length > 0) {
+          const mesh = marker.children[0];
+          const rect = mesh.getBoundingClientRect();
+          const width = rect.width;
+          const height = rect.height;
+          self.canvas.width = width;
+          self.canvas.height = height;
+          self.context.drawImage(self.el.sceneEl.canvas, rect.left, rect.top, width, height);
+          const imageData = self.context.getImageData(0, 0, width, height);
+          const code = jsQR(imageData.data, width, height, {
+            inversionAttempts: 'dontInvert',
           });
+          if (code) {
+            self.textEntity.setAttribute('text', {
+              value: code.data,
+              align: 'center',
+              wrapCount: 20,
+              color: 'black',
+              width: 2
+            });
+          } else {
+            setTimeout(() => {
+              self.detectQRCode();
+            }, 500);
+          }
+        } else {
+          setTimeout(() => {
+            self.detectQRCode();
+          }, 500);
         }
-
-        requestAnimationFrame(updateQRCode);
+      },
+      remove: function () {
+        this.textEntity.parentNode.removeChild(this.textEntity);
       }
-
-      window.addEventListener("load", function () {
-        requestAnimationFrame(updateQRCode);
-      });
-    </script>
-  </body>
+    });
+  </script>
+  <a-scene embedded arjs="sourceType: webcam;">
+    <a-marker preset="hiro">
+      <a-entity position="0 0 0" barcode-detector></a-entity>
+    </a-marker>
+    <a-entity camera></a-entity>
+  </a-scene>
+</body>
 </html>
