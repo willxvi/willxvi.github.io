@@ -21,30 +21,27 @@
         if (this.el.object3D.visible && !this.scanning) {
           this.scanning = true;
           const self = this;
-          this.el.sceneEl.renderer.getSize(this.el.sceneEl.renderer.getSize());
-          setTimeout(() => {
-            const width = this.el.object3D.visibleWidth;
-            const height = this.el.object3D.visibleHeight;
-            self.canvas.width = width;
-            self.canvas.height = height;
-            self.context.drawImage(self.el.sceneEl.canvas, 0, 0, width, height);
-            const imageData = self.context.getImageData(0, 0, width, height);
-            const code = jsQR(imageData.data, imageData.width, imageData.height, {
-              inversionAttempts: 'dontInvert',
+          const width = this.el.object3DMap.mesh.visibleWidth;
+          const height = this.el.object3DMap.mesh.visibleHeight;
+          this.canvas.width = width;
+          this.canvas.height = height;
+          this.context.drawImage(this.el.sceneEl.canvas, 0, 0, width, height);
+          const imageData = this.context.getImageData(0, 0, width, height);
+          const code = jsQR(imageData.data, width, height, {
+            inversionAttempts: 'dontInvert',
+          });
+          if (code) {
+            self.textEntity.setAttribute('text', {
+              value: code.data,
+              align: 'center',
+              wrapCount: 20,
+              color: 'black',
+              width: 2
             });
-            if (code) {
-              self.textEntity.setAttribute('text', {
-                value: code.data,
-                align: 'center',
-                wrapCount: 20,
-                color: 'black',
-                width: 2
-              });
-            } else {
-              self.textEntity.removeAttribute('text');
-            }
-            self.scanning = false;
-          }, 500);
+          } else {
+            self.textEntity.removeAttribute('text');
+          }
+          this.scanning = false;
         }
       }
     });
