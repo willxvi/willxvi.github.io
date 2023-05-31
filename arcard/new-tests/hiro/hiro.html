@@ -15,42 +15,35 @@
         this.context = this.canvas.getContext('2d');
         this.textEntity = document.createElement('a-entity');
         this.el.appendChild(this.textEntity);
-        this.scanInterval = null;
+        this.detectQRCode();
       },
-      startScanning: function () {
+      detectQRCode: function () {
         const self = this;
-        this.scanInterval = setInterval(() => {
-          const width = self.el.object3DMap._mesh.geometry.parameters.width;
-          const height = self.el.object3DMap._mesh.geometry.parameters.height;
-          self.canvas.width = width;
-          self.canvas.height = height;
-          self.context.drawImage(self.el.sceneEl.canvas, 0, 0, width, height);
-          const imageData = self.context.getImageData(0, 0, width, height);
-          const code = jsQR(imageData.data, width, height, {
-            inversionAttempts: 'dontInvert',
+        const width = self.el.object3DMap._mesh.geometry.parameters.width;
+        const height = self.el.object3DMap._mesh.geometry.parameters.height;
+        self.canvas.width = width;
+        self.canvas.height = height;
+        self.context.drawImage(self.el.sceneEl.canvas, 0, 0, width, height);
+        const imageData = self.context.getImageData(0, 0, width, height);
+        const code = jsQR(imageData.data, width, height, {
+          inversionAttempts: 'dontInvert',
+        });
+        if (code) {
+          self.textEntity.setAttribute('text', {
+            value: code.data,
+            align: 'center',
+            wrapCount: 20,
+            color: 'black',
+            width: 2
           });
-          if (code) {
-            clearInterval(self.scanInterval);
-            self.textEntity.setAttribute('text', {
-              value: code.data,
-              align: 'center',
-              wrapCount: 20,
-              color: 'black',
-              width: 2
-            });
-          }
-        }, 500);
-      },
-      stopScanning: function () {
-        clearInterval(this.scanInterval);
-      },
-      tick: function () {
-        if (this.el.object3D.visible && !this.scanInterval) {
-          this.startScanning();
+        } else {
+          setTimeout(() => {
+            self.detectQRCode();
+          }, 500);
         }
       },
       remove: function () {
-        this.stopScanning();
+        this.textEntity.parentNode.removeChild(this.textEntity);
       }
     });
   </script>
