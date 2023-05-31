@@ -13,8 +13,18 @@
       init: function () {
         this.canvas = document.createElement('canvas');
         this.context = this.canvas.getContext('2d');
-        this.textEntity = document.createElement('a-entity');
-        this.el.appendChild(this.textEntity);
+        this.textPlane = document.createElement('a-plane');
+        this.textPlane.setAttribute('width', '2');
+        this.textPlane.setAttribute('height', '0.5');
+        this.textPlane.setAttribute('color', 'black');
+        this.textPlane.setAttribute('position', '0 0.1 0');
+        this.textPlane.setAttribute('text', {
+          value: '',
+          align: 'center',
+          wrapCount: 20,
+          color: 'white'
+        });
+        this.el.appendChild(this.textPlane);
         this.detectQRCode();
       },
       detectQRCode: function () {
@@ -32,34 +42,40 @@
             inversionAttempts: 'dontInvert',
           });
           if (code) {
-            self.textEntity.setAttribute('text', {
-              value: code.data,
-              align: 'center',
-              wrapCount: 20,
-              color: 'black',
-              width: 2
+            self.textPlane.setAttribute('text', {
+              value: code.data
             });
+            self.textPlane.setAttribute('visible', 'true');
           } else {
+            self.textPlane.setAttribute('visible', 'false');
             setTimeout(() => {
               self.detectQRCode();
             }, 500);
           }
         } else {
+          self.textPlane.setAttribute('visible', 'false');
           setTimeout(() => {
             self.detectQRCode();
           }, 500);
         }
       },
       remove: function () {
-        this.textEntity.parentNode.removeChild(this.textEntity);
+        this.textPlane.parentNode.removeChild(this.textPlane);
       }
     });
   </script>
   <a-scene embedded arjs="sourceType: webcam;">
     <a-marker preset="hiro">
       <a-entity position="0 0 0" barcode-detector></a-entity>
+      <a-entity
+        position="0 0.1 0"
+        rotation="-90 0 0"
+        scale="0.5 0.5 0.5"
+        text="value: Hello, AR!; align: center; wrapCount: 12; color: black"
+        material="color: white"
+      ></a-entity>
     </a-marker>
-    <a-entity camera></a-entity>
+    <a-camera-static></a-camera-static>
   </a-scene>
 </body>
 </html>
