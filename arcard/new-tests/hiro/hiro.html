@@ -9,10 +9,7 @@
 <body>
   <h1>Ler QR Code com a câmera do navegador e AR.js</h1>
   <a-scene embedded arjs="sourceType: webcam;">
-    <a-assets>
-      <a-asset-item id="hiro-marker" src="https://raw.githubusercontent.com/AR-js-org/AR.js/master/data/images/hiro.patt"></a-asset-item>
-    </a-assets>
-    <a-marker type="pattern" url="#hiro-marker">
+    <a-marker preset="hiro">
       <a-entity position="0 0 0" barcode-detector></a-entity>
     </a-marker>
     <a-entity camera></a-entity>
