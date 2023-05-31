@@ -19,15 +19,14 @@
       },
       detectQRCode: function () {
         const self = this;
-        const marker = self.el.object3D;
+        const marker = self.el.object3DMap['a-marker'];
         if (marker && marker.children && marker.children.length > 0) {
           const mesh = marker.children[0];
-          const rect = mesh.getBoundingClientRect();
-          const width = rect.width;
-          const height = rect.height;
+          const width = mesh.geometry.parameters.width;
+          const height = mesh.geometry.parameters.height;
           self.canvas.width = width;
           self.canvas.height = height;
-          self.context.drawImage(self.el.sceneEl.canvas, rect.left, rect.top, width, height);
+          self.context.drawImage(self.el.sceneEl.canvas, 0, 0, width, height);
           const imageData = self.context.getImageData(0, 0, width, height);
           const code = jsQR(imageData.data, width, height, {
             inversionAttempts: 'dontInvert',
