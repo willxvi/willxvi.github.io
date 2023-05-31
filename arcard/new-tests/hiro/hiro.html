@@ -3,7 +3,7 @@
   <head>
     <title>AR.js QRCode Marker</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/ar.js/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.0.5/aframe/build/aframe-ar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
   </head>
   <body style="margin: 0; overflow: hidden;">
@@ -20,30 +20,34 @@
         // Obtém a referência ao elemento de texto
         var textElement = document.querySelector('#custom-text');
 
-        // Obtém o elemento de vídeo da câmera
-        var video = document.querySelector('video');
+        // Inicia o processamento dos quadros do vídeo após um atraso
+        setTimeout(function() {
+          // Obtém o elemento de vídeo da câmera
+          var video = document.querySelector('video');
 
-        // Função para processar o quadro do vídeo e decodificar o QR Code
-        function processVideoFrame() {
-          var canvas = document.createElement('canvas');
-          canvas.width = video.videoWidth;
-          canvas.height = video.videoHeight;
-          var context = canvas.getContext('2d');
-          context.drawImage(video, 0, 0, canvas.width, canvas.height);
-          var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
-          var code = jsQR(imageData.data, imageData.width, imageData.height);
-          if (code) {
-            // Atualiza o texto com o valor do QR Code
-            textElement.setAttribute('value', code.data);
+          // Função para processar o quadro do vídeo e decodificar o QR Code
+          function processVideoFrame() {
+            var canvas = document.createElement('canvas');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            var context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+            var code = jsQR(imageData.data, imageData.width, imageData.height);
+            if (code) {
+              // Atualiza o texto com o valor do QR Code
+              textElement.setAttribute('value', code.data);
+            }
+
+            // Continua processando os quadros do vídeo
+            requestAnimationFrame(processVideoFrame);
           }
 
-          // Continua processando os quadros do vídeo
-          requestAnimationFrame(processVideoFrame);
-        }
-
-        // Inicia o processamento dos quadros do vídeo
-        processVideoFrame();
+          // Inicia o processamento dos quadros do vídeo
+          processVideoFrame();
+        }, 1000); // Atraso de 1 segundo para garantir que o elemento de vídeo esteja pronto
       });
     </script>
   </body>
 </html>
+  
