@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Ler QR Code com a câmera do navegador</title>
+  <script src="https://cdn.rawgit.com/cozmo/jsQR/master/dist/jsQR.js"></script>
+</head>
+<body>
+  <h1>Ler QR Code com a câmera do navegador</h1>
+  <video id="video" width="300" height="300" style="border: 1px solid gray"></video>
+  <canvas id="canvas" width="300" height="300" style="display:none;"></canvas>
+  <script>
+    const video = document.getElementById('video');
+    const canvas = document.getElementById('canvas');
+    const context = canvas.getContext('2d');
+    let scanning = false;
+
+    function startScanner() {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } })
+        .then(function (stream) {
+          video.srcObject = stream;
+          video.play();
+          requestAnimationFrame(scan);
+        })
+        .catch(function (err) {
+          console.error('Erro ao acessar a câmera', err);
+        });
+    }
+
+    function scan() {
+      if (video.readyState === video.HAVE_ENOUGH_DATA && !scanning) {
+        scanning = true;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const code = jsQR(imageData.data, imageData.width, imageData.height, {
+          inversionAttempts: 'dontInvert',
+        });
+        if (code) {
+          alert('Texto do QR code: ' + code.data);
+        }
+        scanning = false;
+      }
+      requestAnimationFrame(scan);
+    }
+
+    startScanner();
+  </script>
+</body>
+</html>
