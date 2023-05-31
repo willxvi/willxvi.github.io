@@ -19,23 +19,31 @@
       },
       detectQRCode: function () {
         const self = this;
-        const width = self.el.object3DMap._mesh.geometry.parameters.width;
-        const height = self.el.object3DMap._mesh.geometry.parameters.height;
-        self.canvas.width = width;
-        self.canvas.height = height;
-        self.context.drawImage(self.el.sceneEl.canvas, 0, 0, width, height);
-        const imageData = self.context.getImageData(0, 0, width, height);
-        const code = jsQR(imageData.data, width, height, {
-          inversionAttempts: 'dontInvert',
-        });
-        if (code) {
-          self.textEntity.setAttribute('text', {
-            value: code.data,
-            align: 'center',
-            wrapCount: 20,
-            color: 'black',
-            width: 2
+        const marker = self.el.object3D;
+        if (marker && marker.children && marker.children.length > 0) {
+          const mesh = marker.children[0];
+          const width = mesh.geometry.parameters.width;
+          const height = mesh.geometry.parameters.height;
+          self.canvas.width = width;
+          self.canvas.height = height;
+          self.context.drawImage(self.el.sceneEl.canvas, 0, 0, width, height);
+          const imageData = self.context.getImageData(0, 0, width, height);
+          const code = jsQR(imageData.data, width, height, {
+            inversionAttempts: 'dontInvert',
           });
+          if (code) {
+            self.textEntity.setAttribute('text', {
+              value: code.data,
+              align: 'center',
+              wrapCount: 20,
+              color: 'black',
+              width: 2
+            });
+          } else {
+            setTimeout(() => {
+              self.detectQRCode();
+            }, 500);
+          }
         } else {
           setTimeout(() => {
             self.detectQRCode();
