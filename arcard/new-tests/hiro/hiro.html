@@ -3,51 +3,44 @@
   <head>
     <title>AR.js QRCode Marker</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/2.0.5/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js/aframe/build/aframe-ar.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
   </head>
   <body style="margin: 0; overflow: hidden;">
     <a-scene embedded arjs>
-      <a-marker-camera type="barcode"></a-marker-camera>
+      <a-marker preset="hiro"></a-marker>
       <a-box position="0 0.5 0" material="color: blue;"></a-box>
-      <a-text position="0 -1 0" id="custom-text"></a-text>
-      <a-entity camera></a-entity>
+      <a-entity camera qr-scanner></a-entity>
     </a-scene>
 
     <script>
-      // Espera até que a cena seja carregada
-      document.querySelector('a-scene').addEventListener('loaded', function () {
-        // Obtém a referência ao elemento de texto
-        var textElement = document.querySelector('#custom-text');
-
-        // Inicia o processamento dos quadros do vídeo após um atraso
-        setTimeout(function() {
-          // Obtém o elemento de vídeo da câmera
-          var video = document.querySelector('video');
-
-          // Função para processar o quadro do vídeo e decodificar o QR Code
-          function processVideoFrame() {
-            var canvas = document.createElement('canvas');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            var context = canvas.getContext('2d');
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            var imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+      // Componente A-Frame para detectar e decodificar o QR Code
+      AFRAME.registerComponent('qr-scanner', {
+        init: function () {
+          this.video = document.querySelector('video');
+          this.canvas = document.createElement('canvas');
+          this.canvasContext = this.canvas.getContext('2d');
+          this.decoded = false;
+        },
+        tick: function () {
+          if (this.video.readyState === this.video.HAVE_ENOUGH_DATA && !this.decoded) {
+            this.canvas.width = this.video.videoWidth;
+            this.canvas.height = this.video.videoHeight;
+            this.canvasContext.drawImage(this.video, 0, 0, this.canvas.width, this.canvas.height);
+            var imageData = this.canvasContext.getImageData(0, 0, this.canvas.width, this.canvas.height);
             var code = jsQR(imageData.data, imageData.width, imageData.height);
             if (code) {
-              // Atualiza o texto com o valor do QR Code
-              textElement.setAttribute('value', code.data);
+              showQRCodeContent(code.data);
+              this.decoded = true;
             }
-
-            // Continua processando os quadros do vídeo
-            requestAnimationFrame(processVideoFrame);
           }
-
-          // Inicia o processamento dos quadros do vídeo
-          processVideoFrame();
-        }, 1000); // Atraso de 1 segundo para garantir que o elemento de vídeo esteja pronto
+        }
       });
+
+      // Função para exibir o alerta com o conteúdo do QR Code
+      function showQRCodeContent(content) {
+        alert('Conteúdo do QR Code: ' + content);
+      }
     </script>
   </body>
 </html>
-  
