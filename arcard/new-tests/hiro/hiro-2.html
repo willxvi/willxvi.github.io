@@ -12,16 +12,10 @@
         <a-box position="0 0.5 0" material="color: blue;"></a-box>
       </a-marker>
       <a-entity camera></a-entity>
-
-      <a-entity id="qrText" position="0 -2.5 -5">
-        <a-text value="No QRCode detected" align="center" color="#ffffff"></a-text>
-      </a-entity>
     </a-scene>
 
     <script>
       window.addEventListener("DOMContentLoaded", () => {
-        const qrText = document.getElementById("qrText");
-
         function startCapture() {
           const video = document.querySelector("video");
           if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
@@ -39,14 +33,14 @@
             .then((stream) => {
               video.srcObject = stream;
               video.play();
-              requestAnimationFrame(() => captureFrame(canvas, video, qrText));
+              requestAnimationFrame(() => captureFrame(canvas, video));
             })
             .catch((error) => {
               console.error("Error accessing camera: ", error);
             });
         }
 
-        function captureFrame(canvas, video, qrText) {
+        function captureFrame(canvas, video) {
           canvas.drawImage(video, 0, 0, canvas.canvas.width, canvas.canvas.height);
 
           const imageData = canvas.getImageData(
@@ -58,14 +52,10 @@
 
           const code = jsQR(imageData.data, imageData.width, imageData.height);
           if (code) {
-            qrText.setAttribute("visible", true);
-            qrText.setAttribute("position", "0 -2.5 -5");
-            qrText.setAttribute("text", "value", "QRCode Content: " + code.data);
-          } else {
-            qrText.setAttribute("visible", false);
+            alert("QRCode Content: " + code.data);
           }
 
-          requestAnimationFrame(() => captureFrame(canvas, video, qrText));
+          requestAnimationFrame(() => captureFrame(canvas, video));
         }
 
         startCapture();
