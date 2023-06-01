@@ -2,8 +2,8 @@
 <html>
   <head>
     <meta charset="UTF-8" />
-    <script src="https://aframe.io/releases/1.3.0/aframe.min.js"></script>
-    <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ar.js"></script>
     <script src="https://cdn.rawgit.com/cozmo/jsQR/master/dist/jsQR.js"></script>
   </head>
   <body>
@@ -13,31 +13,26 @@
       </a-marker>
       <a-entity camera></a-entity>
 
-      <div id="qrTextContainer" style="
+      <div id="qrText" style="
         position: absolute;
         bottom: 50px;
         left: 50%;
         transform: translateX(-50%);
-        text-align: center;
-      ">
-        <div id="qrText" style="
-          background-color: rgba(0, 0, 0, 0.8);
-          color: #ffffff;
-          padding: 10px;
-          font-family: Arial, sans-serif;
-          font-size: 16px;
-          display: none;
-        "></div>
-      </div>
+        background-color: rgba(0, 0, 0, 0.8);
+        color: #ffffff;
+        padding: 10px;
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        display: none;
+      "></div>
     </a-scene>
 
     <script>
       window.addEventListener("DOMContentLoaded", () => {
-        const qrTextContainer = document.getElementById("qrTextContainer");
         const qrText = document.getElementById("qrText");
 
-        let lastUpdateTime = 0;
-        let isQRCodeVisible = false;
+        let qrCodeData = null;
+        let qrCodeTimestamp = 0;
 
         function startCapture() {
           const video = document.querySelector("video");
@@ -76,14 +71,15 @@
           const code = jsQR(imageData.data, imageData.width, imageData.height);
           const currentTime = Date.now();
 
-          if (code && currentTime - lastUpdateTime > 60000) {
-            qrText.innerText = "QRCode Content: " + code.data;
-            qrText.style.display = "block";
-            lastUpdateTime = currentTime;
-            isQRCodeVisible = true;
-          } else if (!code && isQRCodeVisible) {
+          if (code) {
+            if (!qrCodeData || currentTime - qrCodeTimestamp > 60000) {
+              qrCodeData = code.data;
+              qrCodeTimestamp = currentTime;
+              qrText.innerText = "QRCode Content: " + qrCodeData;
+              qrText.style.display = "block";
+            }
+          } else {
             qrText.style.display = "none";
-            isQRCodeVisible = false;
           }
 
           requestAnimationFrame(() => captureFrame(canvas, video, qrText));
