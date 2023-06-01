@@ -14,43 +14,45 @@
     </a-scene>
 
     <script>
-      const video = document.querySelector("video");
+      window.addEventListener("DOMContentLoaded", () => {
+        const video = document.querySelector("video");
+        const canvasElement = document.createElement("canvas");
+        const canvas = canvasElement.getContext("2d");
 
-      function startCapture() {
-        navigator.mediaDevices.getUserMedia({ video: true })
-          .then((stream) => {
-            video.srcObject = stream;
-            video.play();
-            requestAnimationFrame(captureFrame);
-          })
-          .catch((error) => {
-            console.error("Error accessing camera: ", error);
-          });
-      }
-
-      function captureFrame() {
-        const canvas = document.createElement("canvas");
-        const canvasContext = canvas.getContext("2d");
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-        canvasContext.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        const imageData = canvasContext.getImageData(
-          0,
-          0,
-          canvas.width,
-          canvas.height
-        );
-
-        const code = jsQR(imageData.data, imageData.width, imageData.height);
-        if (code) {
-          alert("QRCode detected! Content: " + code.data);
+        function startCapture() {
+          navigator.mediaDevices.getUserMedia({ video: true })
+            .then((stream) => {
+              video.srcObject = stream;
+              video.play();
+              requestAnimationFrame(captureFrame);
+            })
+            .catch((error) => {
+              console.error("Error accessing camera: ", error);
+            });
         }
 
-        requestAnimationFrame(captureFrame);
-      }
+        function captureFrame() {
+          canvasElement.width = video.videoWidth;
+          canvasElement.height = video.videoHeight;
+          canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
 
-      startCapture();
+          const imageData = canvas.getImageData(
+            0,
+            0,
+            canvasElement.width,
+            canvasElement.height
+          );
+
+          const code = jsQR(imageData.data, imageData.width, imageData.height);
+          if (code) {
+            alert("QRCode detected! Content: " + code.data);
+          }
+
+          requestAnimationFrame(captureFrame);
+        }
+
+        startCapture();
+      });
     </script>
   </body>
 </html>
