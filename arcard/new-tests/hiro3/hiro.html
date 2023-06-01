@@ -65,7 +65,7 @@
               qrCodeTimestamp = currentTime;
               qrText.innerText = "QRCode Content: " + qrCodeData;
               qrText.style.display = "block";
-              clearInterval(qrCodeInterval);
+              clearTimeout(qrCodeInterval);
               startQRCodeInterval();
             } else if (!code && qrCodeData) {
               qrText.style.display = "none";
@@ -73,10 +73,10 @@
             }
           }
 
-          setInterval(checkQRCode, 1000); // Atualização a cada 1 segundo
+          qrCodeInterval = setTimeout(checkQRCode, 1000); // Inicialização após 1 segundo
 
           function startQRCodeInterval() {
-            setTimeout(() => {
+            qrCodeInterval = setTimeout(() => {
               qrText.style.display = "none";
               qrCodeData = null;
             }, 60000);
