@@ -11,16 +11,21 @@
       <a-marker preset="hiro">
         <a-box position="0 0.5 0" material="color: blue;"></a-box>
       </a-marker>
+      <a-entity camera></a-entity>
     </a-scene>
 
     <script>
       window.addEventListener("DOMContentLoaded", () => {
-        const video = document.querySelector("a-scene")
-          .components["arjs"]._threeSceneEl.camera.el;
         const canvasElement = document.createElement("canvas");
         const canvas = canvasElement.getContext("2d");
 
         function startCapture() {
+          const video = document.querySelector("video");
+          if (!video) {
+            requestAnimationFrame(startCapture);
+            return;
+          }
+          
           navigator.mediaDevices.getUserMedia({ video: true })
             .then((stream) => {
               video.srcObject = stream;
@@ -33,6 +38,12 @@
         }
 
         function captureFrame() {
+          const video = document.querySelector("video");
+          if (!video) {
+            requestAnimationFrame(captureFrame);
+            return;
+          }
+
           canvasElement.width = video.videoWidth;
           canvasElement.height = video.videoHeight;
           canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
