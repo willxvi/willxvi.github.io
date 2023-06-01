@@ -33,6 +33,7 @@
 
         let qrCodeData = null;
         let qrCodeTimestamp = 0;
+        let qrCodeInterval;
 
         function startCapture() {
           const video = document.querySelector("video");
@@ -58,6 +59,13 @@
             });
         }
 
+        function startQRCodeInterval() {
+          qrCodeInterval = setInterval(() => {
+            qrCodeData = null;
+            qrText.style.display = "none";
+          }, 60000);
+        }
+
         function captureFrame(canvas, video, qrText) {
           canvas.drawImage(video, 0, 0, canvas.canvas.width, canvas.canvas.height);
 
@@ -71,21 +79,20 @@
           const code = jsQR(imageData.data, imageData.width, imageData.height);
           const currentTime = Date.now();
 
-          if (code) {
-            if (!qrCodeData || currentTime - qrCodeTimestamp > 60000) {
-              qrCodeData = code.data;
-              qrCodeTimestamp = currentTime;
-              qrText.innerText = "QRCode Content: " + qrCodeData;
-              qrText.style.display = "block";
-            }
-          } else {
-            qrText.style.display = "none";
+          if (code && (currentTime - qrCodeTimestamp > 60000 || code.data !== qrCodeData)) {
+            qrCodeData = code.data;
+            qrCodeTimestamp = currentTime;
+            qrText.innerText = "QRCode Content: " + qrCodeData;
+            qrText.style.display = "block";
+            clearInterval(qrCodeInterval);
+            startQRCodeInterval();
           }
 
           requestAnimationFrame(() => captureFrame(canvas, video, qrText));
         }
 
         startCapture();
+        startQRCodeInterval();
       });
     </script>
   </body>
