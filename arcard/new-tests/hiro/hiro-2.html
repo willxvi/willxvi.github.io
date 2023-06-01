@@ -13,7 +13,9 @@
       </a-marker>
       <a-entity camera></a-entity>
 
-      <a-entity id="qrText" position="0 -2.5 -5" text="value: No QRCode detected; align: center; color: #ffffff;"></a-entity>
+      <a-entity id="qrText" position="0 -2.5 -5">
+        <a-text value="No QRCode detected" align="center" color="#ffffff"></a-text>
+      </a-entity>
     </a-scene>
 
     <script>
@@ -26,7 +28,7 @@
             requestAnimationFrame(startCapture);
             return;
           }
-          
+
           const canvasElement = document.createElement("canvas");
           const canvas = canvasElement.getContext("2d");
 
@@ -56,9 +58,11 @@
 
           const code = jsQR(imageData.data, imageData.width, imageData.height);
           if (code) {
+            qrText.setAttribute("visible", true);
+            qrText.setAttribute("position", "0 -2.5 -5");
             qrText.setAttribute("text", "value", "QRCode Content: " + code.data);
           } else {
-            qrText.setAttribute("text", "value", "No QRCode detected");
+            qrText.setAttribute("visible", false);
           }
 
           requestAnimationFrame(() => captureFrame(canvas, video, qrText));
