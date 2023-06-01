@@ -13,49 +13,45 @@
       </a-marker>
       <a-entity camera></a-entity>
 
-      <a-entity id="qrText" position="0 -2.5 -5" text="value: QRCode Content; align: center; color: #ffffff;"></a-entity>
+      <a-entity id="qrText" position="0 -2.5 -5" text="value: No QRCode detected; align: center; color: #ffffff;"></a-entity>
     </a-scene>
 
     <script>
       window.addEventListener("DOMContentLoaded", () => {
-        const canvasElement = document.createElement("canvas");
-        const canvas = canvasElement.getContext("2d");
         const qrText = document.getElementById("qrText");
 
         function startCapture() {
           const video = document.querySelector("video");
-          if (!video) {
+          if (!video || video.videoWidth === 0 || video.videoHeight === 0) {
             requestAnimationFrame(startCapture);
             return;
           }
           
+          const canvasElement = document.createElement("canvas");
+          const canvas = canvasElement.getContext("2d");
+
+          canvasElement.width = video.videoWidth;
+          canvasElement.height = video.videoHeight;
+
           navigator.mediaDevices.getUserMedia({ video: true })
             .then((stream) => {
               video.srcObject = stream;
               video.play();
-              requestAnimationFrame(captureFrame);
+              requestAnimationFrame(() => captureFrame(canvas, video, qrText));
             })
             .catch((error) => {
               console.error("Error accessing camera: ", error);
             });
         }
 
-        function captureFrame() {
-          const video = document.querySelector("video");
-          if (!video) {
-            requestAnimationFrame(captureFrame);
-            return;
-          }
-
-          canvasElement.width = video.videoWidth;
-          canvasElement.height = video.videoHeight;
-          canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+        function captureFrame(canvas, video, qrText) {
+          canvas.drawImage(video, 0, 0, canvas.canvas.width, canvas.canvas.height);
 
           const imageData = canvas.getImageData(
             0,
             0,
-            canvasElement.width,
-            canvasElement.height
+            canvas.canvas.width,
+            canvas.canvas.height
           );
 
           const code = jsQR(imageData.data, imageData.width, imageData.height);
@@ -65,7 +61,7 @@
             qrText.setAttribute("text", "value", "No QRCode detected");
           }
 
-          requestAnimationFrame(captureFrame);
+          requestAnimationFrame(() => captureFrame(canvas, video, qrText));
         }
 
         startCapture();
