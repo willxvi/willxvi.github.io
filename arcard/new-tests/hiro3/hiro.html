@@ -60,7 +60,7 @@
             const code = jsQR(imageData.data, imageData.width, imageData.height);
             const currentTime = Date.now();
 
-            if (code && (currentTime - qrCodeTimestamp > 60000 || code.data !== qrCodeData)) {
+            if (code && (currentTime - qrCodeTimestamp > 200000 || code.data !== qrCodeData)) {
               qrCodeData = code.data;
               qrCodeTimestamp = currentTime;
               qrText.innerText = "QRCode Content: " + qrCodeData;
@@ -79,7 +79,7 @@
             qrCodeInterval = setTimeout(() => {
               qrText.style.display = "none";
               qrCodeData = null;
-            }, 60000);
+            }, 200000);
           }
         }
 
