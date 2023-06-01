@@ -15,8 +15,6 @@
 
     <script>
       const video = document.querySelector("video");
-      const canvasElement = document.getElementById("canvas");
-      const canvas = canvasElement.getContext("2d");
 
       function startCapture() {
         navigator.mediaDevices.getUserMedia({ video: true })
@@ -31,15 +29,17 @@
       }
 
       function captureFrame() {
-        canvasElement.width = video.videoWidth;
-        canvasElement.height = video.videoHeight;
-        canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
+        const canvas = document.createElement("canvas");
+        const canvasContext = canvas.getContext("2d");
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+        canvasContext.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-        const imageData = canvas.getImageData(
+        const imageData = canvasContext.getImageData(
           0,
           0,
-          canvasElement.width,
-          canvasElement.height
+          canvas.width,
+          canvas.height
         );
 
         const code = jsQR(imageData.data, imageData.width, imageData.height);
